@@ -26,11 +26,12 @@ void make_wav_fmt(struct fmt_chunk *fc){
 	fc->num_channels 	= (unsigned short) NUM_CHANNELS;
 	fc->sample_rate  	= (unsigned int) SAMPLE_RATE;
 	fc->bits_per_sample 	= (unsigned short) BITS_PER_SAMPLE;
-	fc->byte_rate		= (unsigned int) SAMPLE_RATE * fc->num_channels * (fc->bits_per_sample/8); 	  fc->block_align	  = (unsigned short) fc->num_channels * (fc->bits_per_sample/8);
+	fc->byte_rate		= (unsigned int) SAMPLE_RATE * fc->num_channels * (fc->bits_per_sample/8); 	  
+	fc->block_align	  = (unsigned short) fc->num_channels * (fc->bits_per_sample/8);
 }
 
 void make_wav_data(struct data_chunk *dc,struct fmt_chunk *fc){
-	short *bp;
+	short *bp,val;
 	int i;
 	srand(time(NULL));
 	memcpy(&dc->schunk2_id,"data",4);
@@ -38,7 +39,7 @@ void make_wav_data(struct data_chunk *dc,struct fmt_chunk *fc){
 	dc->data = (byte *)malloc(dc->schunk2_size);
 	bp = (short *)dc->data;
 	for(i = 0;i<dc->schunk2_size;i+=2){
-		short val = rand();
+		val = rand();
 		*bp = val;
 		printf("%d \n",val);
 		bp++;
@@ -105,6 +106,10 @@ int main(int argc,char *argv[]){
 	printf("\n Writing on file ... \n");
 	write_file(rhc,fc,dc);
 	printf("\n Written ... \n ");
+	free(dc->data);
+	free(rhc);
+	free(fc);
+	free(dc);
 	return 0;
 }
 
